@@ -20,5 +20,6 @@
         "16": "assets/icon16.png"
       }
     },
-    "permissions": ["sidePanel","history","activeTab"]
+    "permissions": ["sidePanel","history","activeTab","aiLanguageModelOriginTrial","activeTab"],
+    "trial_tokens": ["AmIQ0sSC0Ue41vE5aMccZ94wCuL9HHTgkM8JYLUMIz+AbesiZlRWtoB6CoIs6q6vthOUmGBnde9PfdauVDOFAAUAAAB4eyJvcmlnaW4iOiJjaHJvbWUtZXh0ZW5zaW9uOi8vaWNqamdnZ2Vrb2RiZWRoY2NsY2pub2duaWtpZmdiZGciLCJmZWF0dXJlIjoiQUlQcm9tcHRBUElGb3JFeHRlbnNpb24iLCJleHBpcnkiOjE3NjA0ODYzOTl9"]
   }
