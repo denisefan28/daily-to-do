@@ -15,17 +15,17 @@ root.render(
   <React.StrictMode>
     <App />
     <Accordion>
-        <AccordionSummary
-          aria-controls="panel2-content"
-          id="panel2-header"
-        >
-          <Typography>Recent Browsing History</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Typography>
-            <BrowseHistoryList divName="history-analysis" />
-          </Typography>
-        </AccordionDetails>
-      </Accordion>
+      <AccordionSummary
+        aria-controls="panel2-content"
+        id="panel2-header"
+      >
+        <Typography>Recent Browsing History</Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Typography>
+          <BrowseHistoryList divName="history-data" />
+        </Typography>
+      </AccordionDetails>
+    </Accordion>
   </React.StrictMode>
 );

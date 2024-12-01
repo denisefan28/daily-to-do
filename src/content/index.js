@@ -4,7 +4,7 @@ const millisecondsPerWeek = 1000 * 60 * 60 * 24 * 7;
 const oneWeekAgo = new Date().getTime() - millisecondsPerWeek;
 
 const BrowseHistoryList = ({ divName }) => {
-  
+
   const [urlArray, setUrlArray] = useState([]);
   const urlToCount = {};
 
@@ -51,14 +51,14 @@ const BrowseHistoryList = ({ divName }) => {
   }, []);
 
   return (
-          <div id={divName}>
-          <ul>
-            {urlArray.map((url, index) => (
-              <li key={index}>{url}</li>
-            ))}
-          </ul>
-          </div>
-    
+    <div id={divName}>
+      <ul>
+        {urlArray.map((url, index) => (
+          <li key={index}>{url}</li>
+        ))}
+      </ul>
+    </div>
+
   );
 };
 
