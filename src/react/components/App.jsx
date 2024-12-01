@@ -133,12 +133,13 @@ const ToDoList = ({ tasks, setTasks, onAllTasksCompleted, clearTasks }) => {
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         {tasks.map((task, index) => (
-          <Box key={index} sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+          <Box key={index} sx={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={task.completed}
                   onChange={() => handleTaskChange(index)}
+                  sx={{ alignSelf: 'flex-start' }}
                 />
               }
               label={task.title}
