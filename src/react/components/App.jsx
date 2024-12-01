@@ -19,7 +19,7 @@ async function initDefaults() {
     return;
   }
   const defaults = await chrome.aiOriginTrial.languageModel.capabilities();
-  console.log('Model default:', defaults);
+  //console.log('Model default:', defaults);
   if (defaults.available !== 'readily') {
     console.error(
       `Model not yet available (current state: "${defaults.available}")`
@@ -31,7 +31,7 @@ async function initDefaults() {
 async function runPrompt(prompt, params) {
   try {
     if (!session) {
-      console.log('Creating session');
+      //console.log('Creating session');
       session = await chrome.aiOriginTrial.languageModel.create(params);
     }
 
@@ -43,7 +43,7 @@ async function runPrompt(prompt, params) {
     const urls = Array.from(typedUrlDiv.querySelectorAll('li')).map((li) =>
       li.textContent.trim()
     );
-    console.log('URLs:', urls);
+    // console.log('URLs:', urls);
 
     return session.prompt(prompt + urls.join('\n'));
   } catch (e) {
@@ -133,25 +133,26 @@ const ToDoList = ({ tasks, setTasks, onAllTasksCompleted, clearTasks }) => {
       />
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         {tasks.map((task, index) => (
-          <Box key={index} sx={{ display: 'flex', alignItems: 'flex-start', width: '100%' }}>
+          <Box key={index} sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
             <FormControlLabel
               control={
                 <Checkbox
                   checked={task.completed}
                   onChange={() => handleTaskChange(index)}
-                  sx={{ alignSelf: 'flex-start' }}
+                  sx={{ alignSelf: 'center' }}
                 />
               }
               label={task.title}
+              sx={{ flexGrow: 1 }}
             />
-            <Button
+              <Button
               variant="text"
               color="error"
               size="small"
-              sx={{ marginLeft: '10px' }}
+              sx={{ alignSelf: 'center' }}
               onClick={() => deleteTask(index)}
             >
-              Delete
+              X
             </Button>
           </Box>
         ))}
@@ -166,7 +167,7 @@ const ToDoList = ({ tasks, setTasks, onAllTasksCompleted, clearTasks }) => {
           }}
           onClick={clearTasks}
         >
-          Clear
+          Clear All Tasks!
         </Button>
       </Box>
 
@@ -198,19 +199,19 @@ const App = () => {
     setShowLoading(true);
 
     const prompt =
-      'Generate a to-do list, which only contains top 3 priority tasks, based on the below browser history, response only in bullet points. \n';
+      "Generate a to-do list, which only contains top 3 priority tasks, based on the below browser history." +
+      "Response only in bullet point! Only return tasks no other comments \n";
     try {
       const params = {
         systemPrompt: 'You are a helpful and friendly assistant.',
         temperature: 1,
         topK: 8,
       };
-      console.log('Params:', params);
       const response = await runPrompt(prompt, params);
       const parsedTasks = parseLLMResponse(response);
       setTasks(parsedTasks);
       localStorage.setItem('todoList', JSON.stringify(parsedTasks));
-      console.log('Response:', response);
+      //console.log('Response:', response);
     } catch (e) {
       console.error('Error:', e);
     } finally {
