@@ -15,9 +15,9 @@ const root = createRoot(container);
 
 root.render(
   <React.StrictMode>
-    <Paper square sx={{ pb: '50px', marginTop: '50px'}}>
+    {/* <Paper square sx={{ pb: '50px', marginTop: '50px'}}> */}
     <App />
-    </Paper>
+    {/* </Paper> */}
     <AppBar position="fixed" color="f0" sx={{ top: 'auto', bottom: 0 }}>
     <Accordion>
       <AccordionSummary

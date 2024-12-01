@@ -1,70 +1,43 @@
-# Getting Started with Create React App
+# Getting Started with Daily-to-do
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+https://googlechromeai.devpost.com/
 
-## Available Scripts
+This project is a hackthon demo project of Google Chrome Built-in AI Challenge.
 
-In the project directory, you can run:
 
-### `npm start`
+## Inspiration
+The idea for Daily-To-Do was born out of my personal frustration with mornings that felt aimless. Often, I would sit at my desk, unsure of what to tackle first. I realized that many of us experience these "cold starts" in the morning, where we struggle to prioritize our day. The constant juggling of tasks and responsibilities made me think: What if there was a way to use the power of AI to suggest tasks based on what we’ve been focusing on recently? This spark of inspiration led to the creation of Daily-To-Do, a Chrome plugin that transforms scattered mornings into structured beginnings.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## What it does
+The plugin generate a tailored to-do list based on your browsing history. The plugin analyzes the pages you've visited and suggests actionable tasks to help you start your day with something you may still working on and didn't finish yet.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## How I built it?
 
-### `npm test`
+* [Chorome Extensions Samples](https://github.com/GoogleChrome/chrome-extensions-samples)
+* [Build-in AI](https://developer.chrome.com/docs/ai/built-in)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This is my first time to create a chrome plugin, so I took reference of two examples of chrome extensions
+* https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/api-samples/history
+* https://github.com/GoogleChrome/chrome-extensions-samples/tree/main/functional-samples/ai.gemini-on-device
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The idea is to fetch user browse history once the plugin is launched. Then initialize the build-in Lanaguage model, using `chrome.aiOriginTrial.languageModel`. 
+At the moment, I only use a very simple prompt to analyze the retrieved data and generate meaningful tasks.
+The generated tasks persist in local storage. We can add or remove tasks in the to-do list.
+After we finished all the tasks in the to-do list, there is a congratulation message pop-up.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Accomplishments 
+- support Browsing History Analysis
+- support task generation using LLM responses, tailoring tasks to the user's recent online activity.
+- User interface features
+  - task list display
+  - allow user add new tasks / delete existing tasks
+  - Show a success message when all tasks are marked as complete.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## What's next for Daily-To-Do
+- Enhanced AI Features: Incorporating more data sources, like calendar events or email summaries, to generate even more comprehensive to-do lists. (need permssion to access the data)
+- Smart Task Prioritization: Introducing AI-powered task prioritization based on user preferences.
+- Enhance prompts.
+- Refact code move model interaction to background service worker.

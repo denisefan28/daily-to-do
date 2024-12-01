@@ -9,6 +9,7 @@ import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from '@mui/material/Alert';
 import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
 
 let session;
 
@@ -83,6 +84,8 @@ const parseLLMResponse = (response) => {
 };
 
 const ToDoList = ({ tasks, setTasks, onAllTasksCompleted, clearTasks }) => {
+  const [newTask, setNewTask] = useState('');
+
   useEffect(() => {
     localStorage.setItem('todoList', JSON.stringify(tasks));
   }, [tasks]);
@@ -95,6 +98,22 @@ const ToDoList = ({ tasks, setTasks, onAllTasksCompleted, clearTasks }) => {
 
     if (updatedTasks.every((task) => task.completed)) {
       onAllTasksCompleted();
+    }
+  };
+
+  const addTask = () => {
+    if (newTask.trim() !== '') {
+      setTasks([...tasks, { title: newTask.trim(), completed: false }]);
+      setNewTask('');
+    }
+  };
+
+  const deleteTask = (index) => {
+    const updatedTasks = tasks.filter((_, i) => i !== index);
+    setTasks(updatedTasks);
+    //if updatedTask is empty, clear all tasks
+    if (updatedTasks.length === 0) {
+      clearTasks();
     }
   };
 
@@ -112,32 +131,56 @@ const ToDoList = ({ tasks, setTasks, onAllTasksCompleted, clearTasks }) => {
           marginRight: 'auto',
         }}
       />
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '50px' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
         {tasks.map((task, index) => (
-          <FormControlLabel
-            key={index}
-            control={
-              <Checkbox
-                checked={task.completed}
-                onChange={() => handleTaskChange(index)}
-              />
-            }
-            label={task.title}
-          />
+          <Box key={index} sx={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={task.completed}
+                  onChange={() => handleTaskChange(index)}
+                />
+              }
+              label={task.title}
+            />
+            <Button
+              variant="text"
+              color="error"
+              size="small"
+              sx={{ marginLeft: '10px' }}
+              onClick={() => deleteTask(index)}
+            >
+              Delete
+            </Button>
+          </Box>
         ))}
+
+        <Button
+          variant="text"
+          color="error"
+          size="small"
+          sx={{
+            marginTop: '10px',
+            alignSelf: 'flex-end',
+          }}
+          onClick={clearTasks}
+        >
+          Clear
+        </Button>
       </Box>
-      <Button
-        variant="contained"
-        color="error"
-        sx={{
-          position: 'absolute',
-          bottom: '10px',
-          right: '10px',
-        }}
-        onClick={clearTasks}
-      >
-        Clear All
-      </Button>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+        <TextField
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          label="New Task"
+          variant="standard"
+          fullWidth
+        />
+        <Button onClick={addTask} variant="text" sx={{ marginLeft: 1 }}>
+          Add
+        </Button>
+      </Box>
     </Paper>
   );
 };
@@ -215,14 +258,6 @@ const App = () => {
         </Box>
       )}
 
-      {showCongrats && (
-        <Alert severity="success">
-          🎉 Congratulations! All tasks are completed! 🎉
-        </Alert>
-      )}
-
-      <CssBaseline />
-
       <Container maxWidth="sm">
         <Box
           sx={{
@@ -260,6 +295,11 @@ const App = () => {
           )}
         </Box>
       </Container>
+      {showCongrats && (
+        <Alert severity="success" sx={{ marginTop: 2 }}>
+          🎉 Congratulations! All tasks are completed!
+        </Alert>
+      )}
     </React.Fragment>
   );
 };
