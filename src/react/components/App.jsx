@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -7,6 +7,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
+import Alert from '@mui/material/Alert';
+import Paper from '@mui/material/Paper';
 
 let session;
 
@@ -57,8 +59,6 @@ async function reset() {
   session = null;
 }
 
-initDefaults();
-
 const parseLLMResponse = (response) => {
   const tasks = [];
   const lines = response.split('\n');
@@ -71,11 +71,7 @@ const parseLLMResponse = (response) => {
       if (currentTask) {
         tasks.push(currentTask);
       }
-      currentTask = { title: trimmedLine.slice(1).trim(), subtasks: [] };
-    } else if (trimmedLine) {
-      if (currentTask) {
-        currentTask.subtasks.push(trimmedLine.trim());
-      }
+      currentTask = { title: trimmedLine.replace(/\*/g, '').slice(1).trim(), completed: false };
     }
   });
 
@@ -86,55 +82,90 @@ const parseLLMResponse = (response) => {
   return tasks;
 };
 
-const ToDoList = ({ llmResponse }) => {
-  const tasks = parseLLMResponse(llmResponse);
+const ToDoList = ({ tasks, setTasks, onAllTasksCompleted, clearTasks }) => {
+  useEffect(() => {
+    localStorage.setItem('todoList', JSON.stringify(tasks));
+  }, [tasks]);
+
+  const handleTaskChange = (index) => {
+    const updatedTasks = tasks.map((task, i) =>
+      i === index ? { ...task, completed: !task.completed } : task
+    );
+    setTasks(updatedTasks);
+
+    if (updatedTasks.every((task) => task.completed)) {
+      onAllTasksCompleted();
+    }
+  };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: 2 }}>
-      {tasks.map((task, index) => (
-        <Box key={index} sx={{ marginBottom: 2 }}>
+    <Paper elevation={3} sx={{ width: '100%', padding: 2, position: 'relative' }}>
+      <img
+        src="assets/working.png"
+        alt="Motivational Banner"
+        style={{
+          marginBottom: '20px',
+          width: '300px',
+          height: '300px',
+          display: 'flex',
+          marginLeft: 'auto',
+          marginRight: 'auto',
+        }}
+      />
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', marginBottom: '50px' }}>
+        {tasks.map((task, index) => (
           <FormControlLabel
-            control={<Checkbox />}
-            label={<strong>{task.title}</strong>}
+            key={index}
+            control={
+              <Checkbox
+                checked={task.completed}
+                onChange={() => handleTaskChange(index)}
+              />
+            }
+            label={task.title}
           />
-          {task.subtasks.length > 0 && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', marginLeft: 3 }}>
-              {task.subtasks.map((subtask, subIndex) => (
-                <FormControlLabel
-                  key={subIndex}
-                  control={<Checkbox />}
-                  label={subtask}
-                />
-              ))}
-            </Box>
-          )}
-        </Box>
-      ))}
-    </Box>
+        ))}
+      </Box>
+      <Button
+        variant="contained"
+        color="error"
+        sx={{
+          position: 'absolute',
+          bottom: '10px',
+          right: '10px',
+        }}
+        onClick={clearTasks}
+      >
+        Clear All
+      </Button>
+    </Paper>
   );
 };
 
 const App = () => {
-  const [showTodo, setShowTodo] = useState(false);
+  const [tasks, setTasks] = useState(() => {
+    const savedTasks = JSON.parse(localStorage.getItem('todoList'));
+    return savedTasks || [];
+  });
   const [showLoading, setShowLoading] = useState(false);
-  const [llmResponse, setLlmResponse] = useState('');
-  const [showButton, setShowButton] = useState(true);
+  const [showCongrats, setShowCongrats] = useState(false);
 
   const handleClick = async () => {
     setShowLoading(true);
-    setShowButton(false);
 
     const prompt =
-      'Generate a to-do list with top priority tasks based on the below browser history, response only in bullet points. \n';
+      'Generate a to-do list, which only contains top 3 priority tasks, based on the below browser history, response only in bullet points. \n';
     try {
       const params = {
         systemPrompt: 'You are a helpful and friendly assistant.',
         temperature: 1,
         topK: 8,
       };
+      console.log('Params:', params);
       const response = await runPrompt(prompt, params);
-      setLlmResponse(response);
-      setShowTodo(true);
+      const parsedTasks = parseLLMResponse(response);
+      setTasks(parsedTasks);
+      localStorage.setItem('todoList', JSON.stringify(parsedTasks));
       console.log('Response:', response);
     } catch (e) {
       console.error('Error:', e);
@@ -143,12 +174,36 @@ const App = () => {
     }
   };
 
+  const handleMidnightCheck = () => {
+    const now = new Date();
+    const lastClear = localStorage.getItem('lastClear');
+    if (!lastClear || new Date(lastClear).getDate() !== now.getDate()) {
+      localStorage.removeItem('todoList');
+      localStorage.setItem('lastClear', now.toISOString());
+      setTasks([]);
+    }
+  };
+
+  const handleAllTasksCompleted = () => {
+    setShowCongrats(true);
+    setTimeout(() => setShowCongrats(false), 5000); // Hide effect after 5 seconds
+  };
+
+  const clearTasks = () => {
+    localStorage.removeItem('todoList');
+    setTasks([]);
+  };
+
+  useEffect(() => {
+    handleMidnightCheck();
+  }, []);
+
   return (
     <React.Fragment>
       {showLoading && (
         <Box
           sx={{
-            height: '100vh',
+            height: '500px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
@@ -160,20 +215,44 @@ const App = () => {
         </Box>
       )}
 
+      {showCongrats && (
+        <Alert severity="success">
+          🎉 Congratulations! All tasks are completed! 🎉
+        </Alert>
+      )}
+
       <CssBaseline />
 
       <Container maxWidth="sm">
         <Box
           sx={{
-            height: '100vh',
+            height: 'fit-content',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
           }}
         >
-          {showTodo && <ToDoList llmResponse={llmResponse} />}
-          {showButton && (
+          {tasks.length > 0 ? (
+            <ToDoList
+              tasks={tasks}
+              setTasks={setTasks}
+              onAllTasksCompleted={handleAllTasksCompleted}
+              clearTasks={clearTasks}
+            />
+          ) : !showLoading && (
             <Box sx={{ '& button': { m: 1 } }}>
+              <img
+                src="assets/hello.png"
+                alt="Motivational Banner"
+                style={{
+                  marginBottom: '20px',
+                  width: '300px',
+                  height: '300px',
+                  display: 'flex',
+                  marginLeft: 'auto',
+                  marginRight: 'auto',
+                }}
+              />
               <Button variant="contained" size="large" onClick={handleClick}>
                 Start your journey today!
               </Button>
